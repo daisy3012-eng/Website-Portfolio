@@ -1,0 +1,4 @@
+Tool: built-in image_gen
+Prompt: Center each complete logo horizontally and vertically within its respective coloured quadrant. Preserve the four background blocks, logo designs, lettering, colours, sizes, and overall aspect ratio.
+Original: logos-thumbnail.png
+Output: logos-thumbnail-centered.png

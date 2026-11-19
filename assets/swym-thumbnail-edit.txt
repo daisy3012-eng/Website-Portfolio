@@ -1,0 +1,6 @@
+Tool: built-in image_gen (image edit)
+Latest refinement prompt: Use case: precise-object-edit. Edit the supplied Swym thumbnail. Keep this exact centered laptop, screen design, dark green background, and landscape canvas. Enlarge the laptop uniformly by about 35 percent around its center so it occupies approximately 66 percent of canvas width rather than 49 percent. The whole laptop including base must remain visible, with balanced margins. Preserve all screen design details as faithfully as possible. No standalone logo above the laptop, no new elements. Only change the laptop scale within the frame.
+Source: assets/swym-branding-thumbnail.png
+Output: assets/swym-branding-thumbnail-edited.png
+
+Use case: precise-object-edit. Edit target: the provided Swym laptop thumbnail. Remove only the standalone Swym logo above the laptop, filling with the same dark green background. Move the entire laptop mockup to the exact center of the frame, and scale it down slightly so it fits comfortably with generous breathing room on all sides. Keep the original laptop appearance and screen website content as faithful as possible, including the logo inside the screen. Preserve the dark forest green background and subtle lighting. Output landscape 16:9 thumbnail, entire laptop visible, no additional text or elements.
