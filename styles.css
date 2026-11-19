@@ -583,3 +583,49 @@ html.contact-active body {overscroll-behavior-y:none}
   width:min(100%,calc(var(--overview-image-height,100vw) * 1672 / 941));
  }
 }
+
+/* Contact popup: compact two-column panel, with scrolling inside the scheduler. */
+.contact-dialog {width:min(880px,92vw);height:min(740px,84dvh);max-width:92vw;max-height:84dvh;margin:auto;padding:0;border:1px solid var(--olive);border-radius:16px;background:var(--cream);color:var(--forest);box-shadow:6px 6px 0 #25342640;overflow:hidden}
+.contact-dialog[open] {display:flex;flex-direction:column}
+.contact-dialog::backdrop {background:#111b1399}
+.contact-dialog-bar {display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;padding:24px 28px 26px}
+.contact-dialog-bar h2 {font-size:34px}
+.contact-dialog .close-contact {display:grid;place-items:center;flex:none;width:36px;height:36px;padding:0;border:1px solid var(--forest);border-radius:9px;background:transparent;color:var(--forest);font:400 28px/1 var(--sans)}
+.contact-dialog .close-contact:hover {background:var(--sage)}
+.contact-dialog-content {display:grid;grid-template-columns:minmax(0,42fr) minmax(0,58fr);grid-template-rows:minmax(0,1fr);flex:1;min-height:0;padding:0 28px 28px;overflow:auto}
+.contact-details {display:flex;flex-direction:column;gap:26px;margin:0;padding:4px 24px 0 0;border-right:1px solid var(--forest)}
+.contact-details dt {margin-bottom:8px;font:500 11px/1.5 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--olive)}
+.contact-details dd {margin:0;font:600 17px/1.4 var(--sans);overflow-wrap:anywhere}
+.contact-details a {text-decoration:none}
+.contact-details a:hover {text-decoration:underline}
+.contact-booking {display:flex;flex-direction:column;min-width:0;min-height:0;padding:4px 0 0 24px}
+.contact-booking h3 {font-size:26px;flex:none;margin-bottom:12px}
+.booking-viewport {position:relative;flex:1;min-height:0;min-width:0;overflow:hidden;order:1}
+.contact-dialog .booking-viewport .calendly-inline-widget {position:absolute;inset:0;width:100%;height:100%;min-width:0}
+.booking-fallback {order:2;font-size:11px;margin:10px 0 0;flex:none}
+.booking-error {font-size:12px;margin:0 0 10px;flex:none}
+body.contact-open {overflow:hidden}
+.hero-actions {display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+@media(max-width:700px) {
+ .contact-dialog {width:94vw;max-width:94vw;height:94dvh;max-height:94dvh}
+ .contact-dialog-bar {padding:16px 18px}
+ .contact-dialog-bar h2 {font-size:30px}
+ .contact-dialog-content {grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:14px;padding:0 18px 18px}
+ .contact-details {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;padding:0 0 14px;border-right:0;border-bottom:1px solid var(--sage)}
+ .contact-details dt {font-size:10px;margin-bottom:4px}
+ .contact-details dd {font-size:13px}
+ .contact-booking {padding:0}
+ .contact-booking h3 {font-size:24px;margin-bottom:8px}
+}
+
+/* Hero resume link aligns with the primary button edge on the green panel. */
+.hero .hero-actions .button.button-secondary,
+.hero .hero-actions .button.button-secondary:hover,
+.hero .hero-actions .button.button-secondary:focus-visible {
+ color:#fff;
+ justify-content:flex-start;
+ text-align:left;
+ padding-left:0;
+}
+
+.hero .hero-actions .button.button-secondary {font-weight:400}

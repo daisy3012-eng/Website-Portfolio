@@ -461,3 +461,44 @@ if (document.body.classList.contains('home')) {
     });
   }
 }
+
+// Load the supplied inline scheduler only after the contact popup is visible.
+const contactDialog = document.querySelector('.contact-dialog');
+if (contactDialog) {
+  let contactTrigger;
+  let calendlyScript;
+  const closeContact = contactDialog.querySelector('.close-contact');
+  for (const link of document.querySelectorAll('[data-contact-popup]')) {
+    link.addEventListener('click', event => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (typeof contactDialog.showModal !== 'function') return;
+      event.preventDefault();
+      contactTrigger = mobileNavigation.matches ? navToggle : link;
+      setNavigationOpen(false);
+      contactDialog.showModal();
+      document.body.classList.add('contact-open');
+      contactDialog.querySelector('.contact-dialog-content').scrollTop = 0;
+      closeContact.focus();
+      if (!calendlyScript) {
+        calendlyScript = document.createElement('script');
+        calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
+        calendlyScript.async = true;
+        calendlyScript.onerror = () => {
+          contactDialog.querySelector('.booking-error').hidden = false;
+          calendlyScript.remove();
+          calendlyScript = null;
+        };
+        document.head.append(calendlyScript);
+      }
+    });
+  }
+  closeContact.addEventListener('click', () => contactDialog.close());
+  contactDialog.addEventListener('click', event => {
+    const rect = contactDialog.getBoundingClientRect();
+    if (event.target === contactDialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) contactDialog.close();
+  });
+  contactDialog.addEventListener('close', () => {
+    document.body.classList.remove('contact-open');
+    contactTrigger?.focus({ preventScroll: true });
+  });
+}
