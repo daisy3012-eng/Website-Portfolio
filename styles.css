@@ -629,3 +629,24 @@ body.contact-open {overflow:hidden}
 }
 
 .hero .hero-actions .button.button-secondary {font-weight:400}
+
+/* The last fold must fill the current mobile viewport, including when browser
+   controls retract; a small-viewport height leaves the previous fold exposed. */
+@media(max-width:800px) {
+ .home .contact {min-height:calc(100dvh - var(--header-height) + 1px)}
+}
+
+/* Keep the animated and static Cyber Peace identities together on all screens. */
+#cyber-peace-foundation .cyber-logo-pair {
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:clamp(10px,2vw,24px);
+ align-items:center;
+}
+#cyber-peace-foundation .cyber-logo-pair img {min-width:0;width:100%;height:auto;object-fit:contain}
+
+#cyber-peace-foundation .cyber-logo-pair img:last-child {
+ aspect-ratio:1/1;
+ object-fit:cover;
+ object-position:center;
+}

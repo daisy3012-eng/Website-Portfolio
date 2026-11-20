@@ -375,6 +375,30 @@ if (videoDialog) {
 if (document.body.classList.contains('home')) {
   const folds = [...document.querySelectorAll('main > section')];
   const work = document.querySelector('#work');
+  const contact = document.querySelector('#contact');
+  let lastViewportHeight = window.innerHeight;
+  let viewportRefreshTimer;
+  function refreshMobileViewport() {
+    const viewportHeight = window.innerHeight;
+    const heightChange = viewportHeight - lastViewportHeight;
+    lastViewportHeight = viewportHeight;
+    if (!mobileNavigation.matches || window.visualViewport?.scale > 1) return;
+    // Preserve the end position when browser controls expand/retract. Do not
+    // pull someone reading an earlier fold to Contact.
+    const remaining = document.documentElement.scrollHeight - viewportHeight - window.scrollY;
+    const contactTop = contact.getBoundingClientRect().top;
+    const keepAtEnd = remaining <= Math.abs(heightChange) + 3 &&
+      contactTop <= headerHeight + Math.abs(heightChange) + 3;
+    clearTimeout(viewportRefreshTimer);
+    viewportRefreshTimer = setTimeout(() => {
+      window.ScrollTrigger?.refresh();
+      if (keepAtEnd && !document.querySelector('dialog[open]') && !header.classList.contains('menu-open')) {
+        window.scrollTo({ top: document.documentElement.scrollHeight - window.innerHeight, behavior: 'instant' });
+      }
+      updateHeader();
+    }, 180);
+  }
+  window.addEventListener('resize', refreshMobileViewport);
   function fitOverview() {
     work.style.removeProperty('--overview-image-height');
     if (window.innerWidth <= 800) return;
