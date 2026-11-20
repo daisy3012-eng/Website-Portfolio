@@ -504,6 +504,12 @@ if (contactDialog) {
       contactDialog.querySelector('.contact-dialog-content').scrollTop = 0;
       closeContact.focus();
       if (!calendlyScript) {
+        const widget = contactDialog.querySelector('.calendly-inline-widget');
+        const bookingUrl = new URL(widget.dataset.url);
+        for (const [key, value] of Object.entries({ background_color: '253426', text_color: 'f6f2e9', primary_color: 'e9b442' })) {
+          bookingUrl.searchParams.set(key, value);
+        }
+        widget.dataset.url = bookingUrl.href;
         calendlyScript = document.createElement('script');
         calendlyScript.src = 'https://assets.calendly.com/assets/external/widget.js';
         calendlyScript.async = true;

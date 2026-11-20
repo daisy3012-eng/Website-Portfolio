@@ -585,7 +585,7 @@ html.contact-active body {overscroll-behavior-y:none}
 }
 
 /* Contact popup: compact two-column panel, with scrolling inside the scheduler. */
-.contact-dialog {width:min(880px,92vw);height:min(740px,84dvh);max-width:92vw;max-height:84dvh;margin:auto;padding:0;border:1px solid var(--olive);border-radius:16px;background:var(--cream);color:var(--forest);box-shadow:6px 6px 0 #25342640;overflow:hidden}
+.contact-dialog {width:min(880px,92vw);height:min(740px,84dvh);max-width:92vw;max-height:84dvh;margin:auto;padding:0;border:0;border-radius:16px;background:var(--cream);color:var(--forest);box-shadow:none;overflow:hidden}
 .contact-dialog[open] {display:flex;flex-direction:column}
 .contact-dialog::backdrop {background:#111b1399}
 .contact-dialog-bar {display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;padding:24px 28px 26px}
@@ -605,7 +605,7 @@ html.contact-active body {overscroll-behavior-y:none}
 .booking-fallback {order:2;font-size:11px;margin:10px 0 0;flex:none}
 .booking-error {font-size:12px;margin:0 0 10px;flex:none}
 body.contact-open {overflow:hidden}
-.hero-actions {display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.hero-actions {display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:16px 24px}
 @media(max-width:700px) {
  .contact-dialog {width:94vw;max-width:94vw;height:94dvh;max-height:94dvh}
  .contact-dialog-bar {padding:16px 18px}
@@ -649,4 +649,60 @@ body.contact-open {overflow:hidden}
  aspect-ratio:1/1;
  object-fit:cover;
  object-position:center;
+}
+
+/* Stack hero actions on mobile, keeping Resume aligned with the primary edge. */
+@media(max-width:800px) {
+ .hero .hero-actions {flex-direction:column;align-items:flex-start;gap:16px}
+ .hero .hero-actions .button.button-secondary {padding-left:0;text-align:left;justify-content:flex-start}
+}
+
+/* Give both popup columns a shared heading line below the close control. */
+.contact-dialog-bar {justify-content:flex-end;padding:18px 28px 20px}
+.contact-info {min-width:0;padding:4px 24px 0 0;border-right:1px solid var(--forest)}
+.contact-info h2 {font-size:30px;margin:0 0 28px}
+.contact-info .contact-details {padding:0;border:0}
+.contact-booking h3 {font-size:30px}
+/* Shared dark popup palette on desktop and mobile. */
+.contact-dialog {background:var(--forest);color:var(--cream);border-color:var(--olive)}
+.contact-info {border-color:var(--sage)}
+.contact-dialog .contact-details dt {color:var(--cream)}
+.contact-dialog .contact-details dt,
+.contact-dialog .contact-details dd {font-family:var(--sans);font-weight:400}
+.contact-dialog .contact-booking .booking-fallback,
+.contact-dialog .contact-booking .booking-error,
+.contact-dialog .booking-fallback a {color:var(--cream)}
+.contact-dialog .close-contact {color:var(--cream);border-color:var(--cream)}
+.contact-dialog .close-contact:hover {background:var(--olive)}
+@media(max-width:700px) {
+ .contact-dialog-bar {padding:18px 18px 20px}
+ .contact-info {padding:0 0 16px;border-right:0;border-bottom:1px solid var(--sage)}
+ .contact-info h2 {font-size:30px;margin-bottom:22px}
+ .contact-booking h3 {font-size:24px}
+}
+
+/* Add breathing room between contact details and booking on mobile. */
+@media(max-width:700px) {
+ .contact-dialog-content {row-gap:30px}
+}
+
+/* Flat contact panel and unobtrusive close control, with a darker backdrop. */
+.contact-dialog {border-radius:0}
+.contact-dialog::backdrop {background:#111b13cc}
+.contact-dialog .close-contact {border:0;border-radius:0}
+.contact-dialog .close-contact:hover {background:transparent;color:var(--sage)}
+
+/* Inset the contact column on desktop without moving the booking column. */
+@media(min-width:701px) {
+ .contact-dialog .contact-info {padding-left:24px}
+}
+
+/* Slightly inset mobile contact details while preserving calendar width. */
+@media(max-width:700px) {
+ .contact-dialog .contact-info {padding-left:12px}
+}
+
+/* Align the mobile booking heading with the inset contact text. */
+@media(max-width:700px) {
+ .contact-dialog .contact-booking h3 {margin-left:12px}
 }
