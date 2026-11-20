@@ -723,7 +723,7 @@ body.contact-open {overflow:hidden}
 
 /* Leave reading space below the mobile hero description. */
 @media(max-width:800px) {
- .home .hero-about {padding-bottom:clamp(120px,22svh,200px)}
+ .home .hero-about {padding-bottom:clamp(76px,14svh,128px)}
 }
 
 /* Uppercase navigation sits slightly above its line-box center. Align the
