@@ -706,3 +706,20 @@ body.contact-open {overflow:hidden}
 @media(max-width:700px) {
  .contact-dialog .contact-booking h3 {margin-left:12px}
 }
+
+/* Shorten the mobile hero artwork and fit the portrait to the smaller frame
+   for a wider view, while keeping the description higher on the page. */
+@media(max-width:800px) {
+ .home .hero {--mobile-artwork-height:670px;--mobile-artwork-crop:120px}
+ .home .hero-green,.home .hero-photo {height:calc(var(--mobile-artwork-height) - var(--mobile-artwork-crop))}
+ .home .hero-photo {--portrait-height:max(calc((var(--mobile-artwork-height) - var(--mobile-artwork-crop) + var(--header-height)) * 1.176471),93.75vw)}
+ .home .hero-photo img {top:calc(-1 * var(--header-height) - 8px)}
+}
+@media(max-width:480px) {
+ .home .hero {--mobile-artwork-height:580px}
+}
+
+/* Leave reading space below the mobile hero description. */
+@media(max-width:800px) {
+ .home .hero-about {padding-bottom:clamp(120px,22svh,200px)}
+}
