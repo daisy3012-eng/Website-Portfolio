@@ -1,0 +1,12 @@
+{
+  "name": "website-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio website with Vercel Analytics",
+  "private": true,
+  "scripts": {
+    "analytics": "echo 'Analytics configured via script tag in HTML files'"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
