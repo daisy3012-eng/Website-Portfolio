@@ -371,34 +371,21 @@ if (videoDialog) {
   });
 }
 
-// Match the reference's variable-height, stacked panel pinning on the homepage.
+// Keep stacked panels on desktop; touch devices retain native momentum scrolling.
 if (document.body.classList.contains('home')) {
   const folds = [...document.querySelectorAll('main > section')];
   const work = document.querySelector('#work');
-  const contact = document.querySelector('#contact');
-  let lastViewportHeight = window.innerHeight;
-  let viewportRefreshTimer;
-  function refreshMobileViewport() {
-    const viewportHeight = window.innerHeight;
-    const heightChange = viewportHeight - lastViewportHeight;
-    lastViewportHeight = viewportHeight;
-    if (!mobileNavigation.matches || window.visualViewport?.scale > 1) return;
-    // Preserve the end position when browser controls expand/retract. Do not
-    // pull someone reading an earlier fold to Contact.
-    const remaining = document.documentElement.scrollHeight - viewportHeight - window.scrollY;
-    const contactTop = contact.getBoundingClientRect().top;
-    const keepAtEnd = remaining <= Math.abs(heightChange) + 3 &&
-      contactTop <= headerHeight + Math.abs(heightChange) + 3;
-    clearTimeout(viewportRefreshTimer);
-    viewportRefreshTimer = setTimeout(() => {
-      window.ScrollTrigger?.refresh();
-      if (keepAtEnd && !document.querySelector('dialog[open]') && !header.classList.contains('menu-open')) {
-        window.scrollTo({ top: document.documentElement.scrollHeight - window.innerHeight, behavior: 'instant' });
-      }
-      updateHeader();
-    }, 180);
-  }
-  window.addEventListener('resize', refreshMobileViewport);
+  // On touch/reduced-motion layouts, return to the actual page top even when
+  // #about is already in the URL. Desktop uses the panel-aware handler below.
+  document.addEventListener('click', event => {
+    const logo = event.target.closest('.site-logo');
+    if (!logo || event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ||
+        document.documentElement.classList.contains('stacked-home')) return;
+    event.preventDefault();
+    setNavigationOpen(false);
+    if (location.hash !== '#about') history.pushState(null, '', '#about');
+    window.scrollTo({ top: 0, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+  });
   function fitOverview() {
     work.style.removeProperty('--overview-image-height');
     if (window.innerWidth <= 800) return;
@@ -424,7 +411,8 @@ if (document.body.classList.contains('home')) {
     const motion = gsap.matchMedia();
     ScrollTrigger.addEventListener('refreshInit', fitOverview);
     ScrollTrigger.addEventListener('refresh', updateHeader);
-    motion.add('(prefers-reduced-motion: no-preference)', () => {
+    let initializingMotion = true;
+    motion.add('(min-width: 801px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
       document.documentElement.classList.add('stacked-home');
       let navigating = false;
       let navigationTimer;
@@ -437,7 +425,7 @@ if (document.body.classList.contains('home')) {
         pinSpacing: false,
         invalidateOnRefresh: true
       }));
-      ScrollTrigger.create({
+      const snapTrigger = ScrollTrigger.create({
         start: 0,
         end: () => ScrollTrigger.maxScroll(window),
         invalidateOnRefresh: true,
@@ -448,24 +436,44 @@ if (document.body.classList.contains('home')) {
             const y = self.scroll();
             // Once Contact arrives, leave its position alone, including on short screens.
             const contactStart = Math.min(ScrollTrigger.maxScroll(window), tops[tops.length - 1].start);
-            if (y >= contactStart - 1) return progress;
+            if (y >= contactStart - 1 || document.hidden || document.querySelector('dialog[open]') || header.classList.contains('menu-open') || skillAnimations.size) return progress;
             // Never pull visitors out of the middle of a tall mobile/text-expanded fold.
             if (navigating || folds.some((fold, i) => fold.offsetHeight > window.innerHeight - headerHeight + 2 && y > tops[i].start + 2 && y <= (pins[i]?.start ?? Infinity) + 2)) return progress;
             const maximum = ScrollTrigger.maxScroll(window);
             if (!maximum) return 0;
-            const starts = tops.map(top => Math.min(maximum, top.start));
-            const target = gsap.utils.snap(starts, y);
-            return target / maximum;
+            // Include the reading end of tall folds, so a pause after their
+            // bottom never sends the reader all the way back to the heading.
+            const stops = [...tops, ...pins.filter(Boolean)].map(trigger => Math.max(0, Math.min(maximum, trigger.start)));
+            const target = gsap.utils.snap(stops, y);
+            const radius = Math.min(80, (window.innerHeight - headerHeight) * 0.12);
+            return Math.abs(target - y) <= radius ? target / maximum : progress;
           },
-          duration: 0.5
+          delay: 0.3,
+          inertia: false,
+          duration: { min: 0.2, max: 0.45 },
+          ease: 'power1.inOut'
         }
       });
+      function cancelSnap() {
+        snapTrigger.getTween(true)?.kill();
+      }
+      // A link or dialog interaction takes precedence over a pending snap.
+      document.addEventListener('pointerdown', cancelSnap, { passive: true });
+      document.addEventListener('keydown', cancelSnap);
+      let layoutTimer;
+      const layoutObserver = new ResizeObserver(() => {
+        cancelSnap();
+        clearTimeout(layoutTimer);
+        layoutTimer = setTimeout(() => ScrollTrigger.refresh(true), 200);
+      });
+      layoutObserver.observe(document.querySelector('.skill-list'));
       function navigate(event) {
         const link = event.target.closest('a[href^="#"]');
         if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
         const index = folds.findIndex(fold => `#${fold.id}` === link.hash);
         if (index < 0) return;
         event.preventDefault();
+        cancelSnap();
         navigating = true;
         clearTimeout(navigationTimer);
         history.pushState(null, '', link.hash);
@@ -473,16 +481,23 @@ if (document.body.classList.contains('home')) {
         navigationTimer = setTimeout(() => { navigating = false; }, 1200);
       }
       document.addEventListener('click', navigate);
-      document.fonts?.ready.then(() => ScrollTrigger.refresh());
+      let active = true;
+      document.fonts?.ready.then(() => { if (active) ScrollTrigger.refresh(true); });
       ScrollTrigger.refresh();
       const initialIndex = folds.findIndex(fold => `#${fold.id}` === location.hash);
-      if (initialIndex >= 0) window.scrollTo({ top: tops[initialIndex].start, behavior: 'instant' });
+      if (initializingMotion && initialIndex >= 0) window.scrollTo({ top: tops[initialIndex].start, behavior: 'instant' });
       return () => {
+        active = false;
+        clearTimeout(layoutTimer);
+        layoutObserver.disconnect();
+        document.removeEventListener('pointerdown', cancelSnap);
+        document.removeEventListener('keydown', cancelSnap);
         clearTimeout(navigationTimer);
         document.removeEventListener('click', navigate);
         document.documentElement.classList.remove('stacked-home');
       };
     });
+    initializingMotion = false;
   }
 }
 
